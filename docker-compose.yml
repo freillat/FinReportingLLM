@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  ingestion:
+    build:
+      context: .
+      dockerfile: ingestion/Dockerfile
+    volumes:
+      - raw_data:/data
+      - vector_store_data:/vector_store
+    restart: "no" # This service only needs to run once
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    volumes:
+      - vector_store_data:/vector_store:ro # Mount read-only
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      - ingestion
+    restart: unless-stopped
+
+volumes:
+  raw_data:
+  vector_store_data:
