@@ -1,6 +1,6 @@
 import os
 import glob
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -11,26 +11,32 @@ VECTOR_STORE_PATH = '/vector_store'
 
 def create_vector_store():
     """
-    Loads PDF documents, splits them into chunks, creates embeddings,
-    and stores them in a FAISS vector store.
+    Loads documents from .txt and .pdf files, splits them into chunks,
+    creates embeddings, and stores them in a FAISS vector store.
     """
-    # Find all PDF files in the SEC filings directory
-    pdf_files = glob.glob(os.path.join(DATA_PATH, "sec-edgar-filings", "*", "10-K", "*", "full-submission.txt"))
+    print("Searching for documents to process...")
+    # Find all relevant files in the SEC filings directory
+    txt_files = glob.glob(os.path.join(DATA_PATH, "sec-edgar-filings", "**", "*.txt"), recursive=True)
+    pdf_files = glob.glob(os.path.join(DATA_PATH, "sec-edgar-filings", "**", "*.pdf"), recursive=True)
     
-    if not pdf_files:
-        print("No 10-K full-submission.txt files found. Please run the downloader first.")
-        # Let's adjust to also look for PDF filings directly for more general use
-        pdf_files = glob.glob(os.path.join(DATA_PATH, "**/*.pdf"), recursive=True)
-        if not pdf_files:
-            print("No PDF files found in the data directory either.")
-            return
+    all_files = txt_files + pdf_files
+    
+    if not all_files:
+        print("No .txt or .pdf files found in the data directory. Please ensure the downloader has run successfully.")
+        return
 
-    print(f"Found {len(pdf_files)} documents to process.")
+    print(f"Found {len(all_files)} documents to process.")
     
-    # Load documents
-    loaders = [PyPDFLoader(file_path) for file_path in pdf_files]
+    # Load documents using the appropriate loader
     documents = []
-    for loader in loaders:
+    for file_path in all_files:
+        if file_path.endswith('.pdf'):
+            loader = PyPDFLoader(file_path)
+        elif file_path.endswith('.txt'):
+            loader = TextLoader(file_path, encoding='utf-8')
+        else:
+            continue # Skip other file types
+        
         documents.extend(loader.load())
     
     # Split documents into chunks
