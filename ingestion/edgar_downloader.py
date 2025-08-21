@@ -7,11 +7,12 @@ def download_10k_filings(ticker, num_years):
     Downloads the 10-K filings for a given ticker for a specified number of years.
     """
     print(f"Setting up downloader...")
-    # Initialize downloader with your company name and email
-    dl = Downloader("YourCompanyName", "your.email@example.com")
-    
     output_path = "data"
     os.makedirs(output_path, exist_ok=True)
+
+    # Initialize downloader with your company name and email
+    dl = Downloader("YourCompanyName", "your.email@example.com", output_path)
+    
     
     try:
         print(f"Starting download for ticker {ticker}...")
