@@ -31,8 +31,8 @@ Follow these steps to get the project running. **Docker is required.**
 ### Step 1: Clone the Repository
 
 ```bash
-git clone [https://github.com/your-username/rag-finbot.git](https://github.com/your-username/rag-finbot.git)
-cd rag-finbot
+git clone [https://github.com/freillat/FinReportingLLM](https://github.com/freillat/FinReportingLLM)
+cd FinReportingLLM
 ```
 
 
