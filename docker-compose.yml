@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ingestion/Dockerfile
     volumes:
-      - raw_data:/data
-      - vector_store_data:/vector_store
+      - ./data:/data
+      - ./vector_store:/vector_store
     restart: "no" # This service only needs to run once
 
   app:
@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: app/Dockerfile
     volumes:
-      - vector_store_data:/vector_store:ro # Mount read-only
+      - ./vector_store:/vector_store:ro # Mount read-only
     ports:
       - "8501:8501"
     env_file:
@@ -23,7 +23,3 @@ services:
     depends_on:
       - ingestion
     restart: unless-stopped
-
-volumes:
-  raw_data:
-  vector_store_data:
