@@ -7,6 +7,11 @@ services:
       - ./data:/data
       - ./vector_store:/vector_store
     restart: "no" # This service only needs to run once
+    healthcheck:
+      test: ["CMD", "test", "-f", "/vector_store/index.faiss"]
+      interval: 10s
+      timeout: 5s
+      retries: 30    
 
   app:
     build:
@@ -18,6 +23,7 @@ services:
       - "8501:8501"
     env_file:
       - .env
-    depends_on:
-      - ingestion
     restart: unless-stopped
+    depends_on:
+      ingestion:
+        condition: service_healthy
