@@ -50,9 +50,10 @@ GROQ_API_KEY="gsk_YourSecretGroqApiKeyGoesHere"
 
 Second, the financial documents are sourced using the sec-edgar-downloader Python library. This tool automates fetching official 10-K filings from the SEC EDGAR database. To run the downloader script locally before building the Docker image, you must install this library with the following command:
 
-Bash
-
+```bash
 pip install sec-edgar-downloader
+```
+
 The downloader script (edgar_downloader.py) also requires a user agent (e.g., your name and email) to make requests to the SEC's servers.
 
 
