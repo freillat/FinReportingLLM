@@ -54,7 +54,7 @@ Second, the financial documents are sourced using the sec-edgar-downloader Pytho
 pip install sec-edgar-downloader
 ```
 
-The downloader script (edgar_downloader.py) also requires a user agent (e.g., your name and email) to make requests to the SEC's servers.
+The downloader script (edgar_downloader.py) also suggests specifying a user agent (e.g., your name and email) to make requests to the SEC's servers (not strictly necessary).
 
 
 ### Step 3: Download Financial Filings
