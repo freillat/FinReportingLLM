@@ -9,9 +9,9 @@ services:
     restart: "no" # This service only needs to run once
     healthcheck:
       test: ["CMD", "test", "-f", "/vector_store/index.faiss"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
-      retries: 60    
+      retries: 120    
 
   app:
     build:
