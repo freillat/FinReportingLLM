@@ -107,7 +107,7 @@ docker build -t finbot-app -f app/Dockerfile .
 followed by running it:
 
 ```bash
-docker run --rm -p 8501:8501 -v "$(pwd)/vector_store":/vector_store:ro --env-file .env finbot-app
+docker run --rm -p 8501:8501 --mount type=bind,source="$(pwd)/vector_store",target=/vector_store,readonly --env-file .env finbot-app
 ```
 
 Once the build is complete and the services are running, open your web browser and navigate to:
