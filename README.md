@@ -36,7 +36,7 @@ cd FinReportingLLM
 ```
 
 
-### Step 2: 🔑 API Key & Data Sourcing
+### Step 2: 🔑 API Key, Data Sourcing & pre-requisites
 
 This application relies on two key external services.
 First, it uses the Groq API to power the Large Language Model (LLM), which provides incredibly fast and accurate answers. To use the app, you must obtain your own free Groq API Key from the Groq Console and place it in the .env file; this is how the application authenticates itself.
@@ -48,10 +48,20 @@ Rename the template `.env.example` to `.env` (or create a new `.env` file) and a
 GROQ_API_KEY="gsk_YourSecretGroqApiKeyGoesHere"
 ```
 
-Second, the financial documents are sourced using the sec-edgar-downloader Python library. This tool automates fetching official 10-K filings from the SEC EDGAR database. To run the downloader script locally before building the Docker image, you must install this library with the following command:
+Second, the financial documents are sourced using the sec-edgar-downloader Python library. This tool automates fetching official 10-K filings from the SEC EDGAR database. To run the downloader script locally, you can install this library with the following command:
 
 ```bash
 pip install sec-edgar-downloader
+```
+
+or as a preferred option using pipenv:
+```bash
+pip install pipenv
+```
+
+and then running in the project's root directory
+```bash
+pipenv install -r ingestion/requirements.txt
 ```
 
 The downloader script (edgar_downloader.py) also suggests specifying a user agent (e.g., your name and email) to make requests to the SEC's servers (not strictly necessary).
@@ -61,16 +71,16 @@ The downloader script (edgar_downloader.py) also suggests specifying a user agen
 
 Run the `edgar_downloader.py` script to fetch the 10-K reports. This script downloads the data into the `./data/` directory, which will be used by the Docker container.
 
-By default, it downloads for MicroStrategy (`MSTR`). You can change this by passing arguments:
+By default, it downloads for MicroStrategy (`MSTR`). You can change this by passing arguments (below assuming your are using pipenv):
 
 ```bash
 # Download for the default ticker (MSTR) for the last 5 years
-python ingestion/edgar_downloader.py
+pipenv run python ingestion/edgar_downloader.py
 
 # --- OR ---
 
 # Download for a different ticker (e.g., NVIDIA for 3 years)
-python ingestion/edgar_downloader.py --ticker NVDA --years 3
+pipenv run python ingestion/edgar_downloader.py --ticker NVDA --years 3
 ```
 Wait for the download to complete before proceeding.
 
@@ -80,6 +90,24 @@ Use Docker Compose to build the images and launch the services. The `ingestion` 
 
 ```bash
 docker-compose up --build
+```
+
+As an alternative given that the `ingestion` service takes a while to run (over 1 hour on my laptop...)
+
+```bash
+pipenv run python ingestion/ingest.py
+```
+
+Once down you can build the Finbot app:
+
+```bash
+docker build -t finbot-app -f app/Dockerfile .
+```
+
+followed by running it:
+
+```bash
+docker run --rm -p 8501:8501 -v "$(pwd)/vector_store":/vector_store:ro --env-file .env finbot-app
 ```
 
 Once the build is complete and the services are running, open your web browser and navigate to:
